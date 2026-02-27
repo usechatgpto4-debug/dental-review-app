@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import CrossLayout from '@/components/CrossLayout';
 import PdfControls from '@/components/PdfControls';
 import type { SlotType } from '@/lib/constants';
@@ -43,7 +44,7 @@ export default function Home() {
           </div>
         </div>
         <div className="app-header__actions">
-          <a href="/face-review" className="btn btn--sm btn--outline">😊 Face Review</a>
+          <Link href="/face-review" className="btn btn--sm btn--outline">😊 Face Review</Link>
           {filledCount > 0 && (
             <button className="btn btn--sm btn--ghost" onClick={handleClearAll}>
               🗑️ Clear All
@@ -67,8 +68,8 @@ export default function Home() {
       <footer className="app-footer">
         <p>Drag & drop images or paste URLs • Supports Google Drive links</p>
         <div style={{ display: 'flex', gap: '16px' }}>
-          <a href="/face-review" className="app-footer__link">😊 Face Review</a>
-          <a href="/api-guide" className="app-footer__link">📖 API Guide</a>
+          <Link href="/face-review" className="app-footer__link">😊 Face Review</Link>
+          <Link href="/api-guide" className="app-footer__link">📖 API Guide</Link>
         </div>
       </footer>
     </main>

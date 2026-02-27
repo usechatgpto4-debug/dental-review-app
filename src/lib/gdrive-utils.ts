@@ -30,6 +30,10 @@ export function isGoogleDriveUrl(url: string): boolean {
     return url.includes('drive.google.com') || url.includes('docs.google.com');
 }
 
+export function getDirectDownloadUrl(fileId: string): string {
+    return `https://lh3.googleusercontent.com/d/${fileId}=s2048`;
+}
+
 /**
  * Fetches an image from Google Drive using multiple strategies:
  * 1. Google Drive API direct media export (most reliable)

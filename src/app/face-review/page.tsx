@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Link from 'next/link';
 import FaceLayout from '@/components/FaceLayout';
 import PdfControls from '@/components/PdfControls';
 import type { SlotType } from '@/lib/constants';
@@ -55,7 +56,7 @@ export default function FaceReviewPage() {
                     </div>
                 </div>
                 <div className="app-header__actions">
-                    <a href="/" className="btn btn--sm btn--ghost">🦷 Dental Review</a>
+                    <Link href="/" className="btn btn--sm btn--ghost">🦷 Dental Review</Link>
                     {filledCount > 0 && (
                         <button className="btn btn--sm btn--ghost" onClick={handleClearAll}>
                             🗑️ Clear All
@@ -79,8 +80,8 @@ export default function FaceReviewPage() {
             <footer className="app-footer">
                 <p>Drag & drop images or paste URLs • Supports Google Drive links</p>
                 <div style={{ display: 'flex', gap: '16px' }}>
-                    <a href="/" className="app-footer__link">🦷 Dental Review</a>
-                    <a href="/api-guide" className="app-footer__link">📖 API Guide</a>
+                    <Link href="/" className="app-footer__link">🦷 Dental Review</Link>
+                    <Link href="/api-guide" className="app-footer__link">📖 API Guide</Link>
                 </div>
             </footer>
         </main>
