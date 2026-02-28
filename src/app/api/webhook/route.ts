@@ -93,7 +93,7 @@ async function generatePdf(
         const usableW = page.width - margin * 2;
         const usableH = page.height - margin * 2;
 
-        // Dark background
+        // White background
         doc.rect(0, 0, page.width, page.height).fill('#ffffff');
 
         // Cross layout — all 5 slots equal 4:3

@@ -48,11 +48,11 @@ export async function POST(request: NextRequest) {
             if (!input || typeof input !== 'string') continue;
 
             const buffer = await resolveImage(input);
-            // All 3 face images get the same 4:3 aspect ratio and white bg padding
+            // All 3 face images get the same 2:3 portrait ratio and white bg padding
             processedImages[slot] = await processImageForSlot(buffer, 'center', {
                 bgColor: { r: 255, g: 255, b: 255 },
                 width: 400,
-                height: 300,
+                height: 600,
             });
         }
 
@@ -98,9 +98,9 @@ async function generateFacePdf(
         // White background
         doc.rect(0, 0, page.width, page.height).fill('#ffffff');
 
-        // 3 images side by side — equal width, vertically centered
+        // 3 images side by side — 2:3 portrait ratio, vertically centered
         const imgW = (usableW - gap * 2) / 3;
-        const imgH = usableH * 0.85; // Leave room at top/bottom
+        const imgH = imgW * (3 / 2); // 2:3 ratio
         const topY = margin + (usableH - imgH) / 2;
 
         const slots: FaceSlot[] = ['left', 'center', 'right'];
