@@ -14,9 +14,9 @@ interface FaceLayoutProps {
 export default function FaceLayout({ images, onImageSet, onImageRemove }: FaceLayoutProps) {
     return (
         <div className="face-layout">
-            <ImageSlot slotType="left" image={images.left} onImageSet={onImageSet} onImageRemove={onImageRemove} />
-            <ImageSlot slotType="center" image={images.center} onImageSet={onImageSet} onImageRemove={onImageRemove} />
-            <ImageSlot slotType="right" image={images.right} onImageSet={onImageSet} onImageRemove={onImageRemove} />
+            <ImageSlot slotType="left" image={images.left} layout="face" onImageSet={onImageSet} onImageRemove={onImageRemove} />
+            <ImageSlot slotType="center" image={images.center} layout="face" onImageSet={onImageSet} onImageRemove={onImageRemove} />
+            <ImageSlot slotType="right" image={images.right} layout="face" onImageSet={onImageSet} onImageRemove={onImageRemove} />
         </div>
     );
 }

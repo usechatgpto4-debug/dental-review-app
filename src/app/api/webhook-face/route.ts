@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
             if (!input || typeof input !== 'string') continue;
 
             const buffer = await resolveImage(input);
-            // All 3 face images get the same 2:3 portrait ratio and white bg padding
+            // All 3 face images get the same 9:16 portrait ratio and white bg padding
             processedImages[slot] = await processImageForSlot(buffer, 'center', {
                 bgColor: { r: 255, g: 255, b: 255 },
-                width: 400,
-                height: 600,
+                width: 360,
+                height: 640,
             });
         }
 
@@ -100,9 +100,22 @@ async function generateFacePdf(
         // White background
         doc.rect(0, 0, page.width, page.height).fill('#ffffff');
 
-        // 3 images side by side — 2:3 portrait ratio, vertically centered
+        // 3 images side by side — 9:16 portrait ratio, vertically centered
         const imgW = (usableW - gap * 2) / 3;
-        const imgH = imgW * (3 / 2); // 2:3 ratio
+        const imgH_byW = imgW * (16 / 9); // 9:16 ratio
+
+        // Constrain by height if needed
+        let imgH: number, finalW: number;
+        if (imgH_byW > usableH) {
+            imgH = usableH;
+            finalW = imgH * (9 / 16);
+        } else {
+            imgH = imgH_byW;
+            finalW = imgW;
+        }
+
+        const totalW = finalW * 3 + gap * 2;
+        const startX = margin + (usableW - totalW) / 2;
         const topY = margin + (usableH - imgH) / 2;
 
         const slots: FaceSlot[] = ['left', 'center', 'right'];
@@ -111,24 +124,24 @@ async function generateFacePdf(
             const img = images[slot];
             if (!img) return;
 
-            const x = margin + i * (imgW + gap);
+            const x = startX + i * (finalW + gap);
 
             try {
                 doc.save();
                 // Rounded corner clip
                 const r = 8;
                 doc.moveTo(x + r, topY)
-                    .lineTo(x + imgW - r, topY)
-                    .quadraticCurveTo(x + imgW, topY, x + imgW, topY + r)
-                    .lineTo(x + imgW, topY + imgH - r)
-                    .quadraticCurveTo(x + imgW, topY + imgH, x + imgW - r, topY + imgH)
+                    .lineTo(x + finalW - r, topY)
+                    .quadraticCurveTo(x + finalW, topY, x + finalW, topY + r)
+                    .lineTo(x + finalW, topY + imgH - r)
+                    .quadraticCurveTo(x + finalW, topY + imgH, x + finalW - r, topY + imgH)
                     .lineTo(x + r, topY + imgH)
                     .quadraticCurveTo(x, topY + imgH, x, topY + imgH - r)
                     .lineTo(x, topY + r)
                     .quadraticCurveTo(x, topY, x + r, topY)
                     .clip();
 
-                doc.image(img, x, topY, { width: imgW, height: imgH });
+                doc.image(img, x, topY, { width: finalW, height: imgH });
                 doc.restore();
             } catch {
                 // skip failed images

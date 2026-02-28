@@ -504,10 +504,10 @@ body {
   align-items: stretch;
 }
 
-/* Face Review — 2:3 portrait ratio */
+/* Face Review — 9:16 portrait ratio */
 .face-layout .image-slot {
-  width: 220px;
-  height: 330px;
+  width: 180px;
+  height: 320px;
 }
 
 /* ===========================

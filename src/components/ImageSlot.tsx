@@ -7,11 +7,12 @@ import { SLOT_CONFIGS } from '@/lib/constants';
 interface ImageSlotProps {
     slotType: SlotType;
     image: string | null;
+    layout?: 'dental' | 'face';
     onImageSet: (slotType: SlotType, imageDataUrl: string) => void;
     onImageRemove: (slotType: SlotType) => void;
 }
 
-export default function ImageSlot({ slotType, image, onImageSet, onImageRemove }: ImageSlotProps) {
+export default function ImageSlot({ slotType, image, layout, onImageSet, onImageRemove }: ImageSlotProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showUrlInput, setShowUrlInput] = useState(false);
@@ -25,6 +26,7 @@ export default function ImageSlot({ slotType, image, onImageSet, onImageRemove }
             const formData = new FormData();
             formData.append('file', file);
             formData.append('slotType', slotType);
+            if (layout) formData.append('layout', layout);
 
             const res = await fetch('/api/process-image', { method: 'POST', body: formData });
             const data = await res.json();
@@ -43,6 +45,7 @@ export default function ImageSlot({ slotType, image, onImageSet, onImageRemove }
             const formData = new FormData();
             formData.append('url', urlValue.trim());
             formData.append('slotType', slotType);
+            if (layout) formData.append('layout', layout);
 
             const res = await fetch('/api/process-image', { method: 'POST', body: formData });
             const data = await res.json();

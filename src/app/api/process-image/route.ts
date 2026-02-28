@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const slotType = formData.get('slotType') as SlotType;
+        const layout = formData.get('layout') as string | null;
 
         if (!slotType) {
             return NextResponse.json({ error: 'slotType is required' }, { status: 400 });
@@ -40,7 +41,12 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const processed = await processImageForSlot(imageBuffer, slotType);
+        // Face layout uses 9:16 portrait ratio
+        const options = layout === 'face'
+            ? { width: 360, height: 640, bgColor: { r: 255, g: 255, b: 255 } }
+            : undefined;
+
+        const processed = await processImageForSlot(imageBuffer, slotType, options);
         const resultBase64 = `data:image/jpeg;base64,${processed.toString('base64')}`;
 
         return NextResponse.json({ image: resultBase64 });
