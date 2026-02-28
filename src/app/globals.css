@@ -165,22 +165,14 @@ body {
   border-color: var(--border);
 }
 
-/* Slot sizes */
+/* Slot sizes — all 5 dental slots equal 4:3 */
 .image-slot--top,
-.image-slot--bottom {
-  width: 280px;
-  height: 175px;
-}
-
+.image-slot--bottom,
 .image-slot--left,
-.image-slot--right {
-  width: 210px;
-  height: 294px;
-}
-
+.image-slot--right,
 .image-slot--center {
-  width: 280px;
-  height: 294px;
+  width: 240px;
+  height: 180px;
 }
 
 /* Slot content */
@@ -512,9 +504,10 @@ body {
   align-items: stretch;
 }
 
+/* Face Review — 2:3 portrait ratio */
 .face-layout .image-slot {
-  width: 260px;
-  height: 340px;
+  width: 220px;
+  height: 330px;
 }
 
 /* ===========================

@@ -12,16 +12,16 @@ export const SLOT_CONFIGS: Record<SlotType, SlotConfig> = {
   top: {
     label: 'Top (Upper Occlusal)',
     labelTh: 'บน',
-    aspectRatio: 16 / 10,
+    aspectRatio: 4 / 3,
     width: 400,
-    height: 250,
+    height: 300,
   },
   left: {
     label: 'Left (Lateral)',
     labelTh: 'ซ้าย',
-    aspectRatio: 10 / 14,
-    width: 300,
-    height: 420,
+    aspectRatio: 4 / 3,
+    width: 400,
+    height: 300,
   },
   center: {
     label: 'Center (Frontal)',
@@ -33,16 +33,16 @@ export const SLOT_CONFIGS: Record<SlotType, SlotConfig> = {
   right: {
     label: 'Right (Lateral)',
     labelTh: 'ขวา',
-    aspectRatio: 10 / 14,
-    width: 300,
-    height: 420,
+    aspectRatio: 4 / 3,
+    width: 400,
+    height: 300,
   },
   bottom: {
     label: 'Bottom (Lower Occlusal)',
     labelTh: 'ล่าง',
-    aspectRatio: 16 / 10,
+    aspectRatio: 4 / 3,
     width: 400,
-    height: 250,
+    height: 300,
   },
 };
 

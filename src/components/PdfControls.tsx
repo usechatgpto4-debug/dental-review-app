@@ -33,31 +33,31 @@ export default function PdfControls({ images }: PdfControlsProps) {
             const margin = 8;
             const gap = 3;
 
-            // Calculate layout dimensions
+            // Calculate layout dimensions — all 5 slots equal 4:3
             const usableW = pageW - margin * 2;
             const usableH = pageH - margin * 2;
 
-            // Cross layout proportions
-            // Middle row = 3 slots (left, center, right), top & bottom row = 1 slot each
-            // Heights: top ~25%, middle ~45%, bottom ~25%, gaps ~5%
-            const topH = usableH * 0.24;
-            const midH = usableH * 0.44;
-            const botH = usableH * 0.24;
+            // Each slot is 4:3 ratio. Fit 3 columns across.
+            const slotW = (usableW - gap * 2) / 3;
+            const slotH = slotW * (3 / 4); // 4:3 ratio
 
-            const centerW = usableW * 0.42;
-            const sideW = (usableW - centerW - gap * 2) / 2;
+            // Total height = 3 rows + 2 gaps
+            const totalGridH = slotH * 3 + gap * 2;
+            const offsetY = margin + (usableH - totalGridH) / 2;
 
-            const topY = margin;
-            const midY = margin + topH + gap;
-            const botY = midY + midH + gap;
+            const col0X = margin;
+            const col1X = margin + slotW + gap;
+            const col2X = margin + (slotW + gap) * 2;
 
-            const centerX = margin + sideW + gap;
+            const row0Y = offsetY;
+            const row1Y = offsetY + slotH + gap;
+            const row2Y = offsetY + (slotH + gap) * 2;
 
             // background
             pdf.setFillColor(15, 15, 20);
             pdf.rect(0, 0, pageW, pageH, 'F');
 
-            // Draw images with rounded corners simulation
+            // Draw images
             const drawImage = (img: string | null, x: number, y: number, w: number, h: number) => {
                 if (!img) return;
                 try {
@@ -67,25 +67,25 @@ export default function PdfControls({ images }: PdfControlsProps) {
                 }
             };
 
-            // Top (centered)
-            drawImage(images.top, centerX, topY, centerW, topH);
+            // Top (center column, row 0)
+            drawImage(images.top, col1X, row0Y, slotW, slotH);
 
-            // Middle row
-            drawImage(images.left, margin, midY, sideW, midH);
-            drawImage(images.center, centerX, midY, centerW, midH);
-            drawImage(images.right, centerX + centerW + gap, midY, sideW, midH);
+            // Middle row (all 3 columns, row 1)
+            drawImage(images.left, col0X, row1Y, slotW, slotH);
+            drawImage(images.center, col1X, row1Y, slotW, slotH);
+            drawImage(images.right, col2X, row1Y, slotW, slotH);
 
-            // Bottom (centered)
-            drawImage(images.bottom, centerX, botY, centerW, botH);
+            // Bottom (center column, row 2)
+            drawImage(images.bottom, col1X, row2Y, slotW, slotH);
 
             // Add subtle border to each image
             pdf.setDrawColor(50, 50, 60);
             pdf.setLineWidth(0.3);
-            if (images.top) pdf.rect(centerX, topY, centerW, topH);
-            if (images.left) pdf.rect(margin, midY, sideW, midH);
-            if (images.center) pdf.rect(centerX, midY, centerW, midH);
-            if (images.right) pdf.rect(centerX + centerW + gap, midY, sideW, midH);
-            if (images.bottom) pdf.rect(centerX, botY, centerW, botH);
+            if (images.top) pdf.rect(col1X, row0Y, slotW, slotH);
+            if (images.left) pdf.rect(col0X, row1Y, slotW, slotH);
+            if (images.center) pdf.rect(col1X, row1Y, slotW, slotH);
+            if (images.right) pdf.rect(col2X, row1Y, slotW, slotH);
+            if (images.bottom) pdf.rect(col1X, row2Y, slotW, slotH);
 
             const timestamp = new Date().toISOString().slice(0, 10);
             pdf.save(`dental-review-${timestamp}.pdf`);
