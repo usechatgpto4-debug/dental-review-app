@@ -34,20 +34,34 @@ export default function PdfControls({ images }: PdfControlsProps) {
             const gap = 3;
 
             // Calculate layout dimensions — all 5 slots equal 4:3
+            // Use the constraining axis so grid never overflows
             const usableW = pageW - margin * 2;
             const usableH = pageH - margin * 2;
 
-            // Each slot is 4:3 ratio. Fit 3 columns across.
-            const slotW = (usableW - gap * 2) / 3;
-            const slotH = slotW * (3 / 4); // 4:3 ratio
+            // Try width-first: 3 columns across
+            const slotW_byW = (usableW - gap * 2) / 3;
+            const slotH_byW = slotW_byW * (3 / 4);
+            const totalH_byW = slotH_byW * 3 + gap * 2;
 
-            // Total height = 3 rows + 2 gaps
+            // If height overflows, constrain by height instead
+            let slotW: number, slotH: number;
+            if (totalH_byW > usableH) {
+                slotH = (usableH - gap * 2) / 3;
+                slotW = slotH * (4 / 3);
+            } else {
+                slotW = slotW_byW;
+                slotH = slotH_byW;
+            }
+
+            // Center the grid on the page
+            const totalGridW = slotW * 3 + gap * 2;
             const totalGridH = slotH * 3 + gap * 2;
+            const offsetX = margin + (usableW - totalGridW) / 2;
             const offsetY = margin + (usableH - totalGridH) / 2;
 
-            const col0X = margin;
-            const col1X = margin + slotW + gap;
-            const col2X = margin + (slotW + gap) * 2;
+            const col0X = offsetX;
+            const col1X = offsetX + slotW + gap;
+            const col2X = offsetX + (slotW + gap) * 2;
 
             const row0Y = offsetY;
             const row1Y = offsetY + slotH + gap;

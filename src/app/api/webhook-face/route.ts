@@ -13,6 +13,8 @@ interface FacePayload {
 const PAGE_CONFIGS = {
     'a4-portrait': { width: 595.28, height: 841.89 },
     'a4-landscape': { width: 841.89, height: 595.28 },
+    'a3-portrait': { width: 841.89, height: 1190.55 },
+    'a3-landscape': { width: 1190.55, height: 841.89 },
     'letter-portrait': { width: 612, height: 792 },
     'letter-landscape': { width: 792, height: 612 },
 } as const;

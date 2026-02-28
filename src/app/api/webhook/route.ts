@@ -17,6 +17,8 @@ interface WebhookPayload {
 const PAGE_CONFIGS = {
     'a4-portrait': { width: 595.28, height: 841.89 },
     'a4-landscape': { width: 841.89, height: 595.28 },
+    'a3-portrait': { width: 841.89, height: 1190.55 },
+    'a3-landscape': { width: 1190.55, height: 841.89 },
     'letter-portrait': { width: 612, height: 792 },
     'letter-landscape': { width: 792, height: 612 },
 } as const;
@@ -97,16 +99,29 @@ async function generatePdf(
         doc.rect(0, 0, page.width, page.height).fill('#ffffff');
 
         // Cross layout — all 5 slots equal 4:3
-        const slotW = (usableW - gap * 2) / 3;
-        const slotH = slotW * (3 / 4); // 4:3 ratio
+        // Use the constraining axis so grid never overflows
+        const slotW_byW = (usableW - gap * 2) / 3;
+        const slotH_byW = slotW_byW * (3 / 4);
+        const totalH_byW = slotH_byW * 3 + gap * 2;
 
-        // Total height = 3 rows + 2 gaps, vertically centered
+        let slotW: number, slotH: number;
+        if (totalH_byW > usableH) {
+            slotH = (usableH - gap * 2) / 3;
+            slotW = slotH * (4 / 3);
+        } else {
+            slotW = slotW_byW;
+            slotH = slotH_byW;
+        }
+
+        // Center the grid on the page
+        const totalGridW = slotW * 3 + gap * 2;
         const totalGridH = slotH * 3 + gap * 2;
+        const offsetX = margin + (usableW - totalGridW) / 2;
         const offsetY = margin + (usableH - totalGridH) / 2;
 
-        const col0X = margin;
-        const col1X = margin + slotW + gap;
-        const col2X = margin + (slotW + gap) * 2;
+        const col0X = offsetX;
+        const col1X = offsetX + slotW + gap;
+        const col2X = offsetX + (slotW + gap) * 2;
 
         const row0Y = offsetY;
         const row1Y = offsetY + slotH + gap;
