@@ -96,19 +96,21 @@ async function generatePdf(
         // Dark background
         doc.rect(0, 0, page.width, page.height).fill('#ffffff');
 
-        // Cross layout — tighter proportions
-        const topH = usableH * 0.22;
-        const midH = usableH * 0.48;
-        const botH = usableH * 0.22;
+        // Cross layout — all 5 slots equal 4:3
+        const slotW = (usableW - gap * 2) / 3;
+        const slotH = slotW * (3 / 4); // 4:3 ratio
 
-        const centerW = usableW * 0.44;
-        const sideW = (usableW - centerW - gap * 2) / 2;
+        // Total height = 3 rows + 2 gaps, vertically centered
+        const totalGridH = slotH * 3 + gap * 2;
+        const offsetY = margin + (usableH - totalGridH) / 2;
 
-        const topY = margin;
-        const midY = margin + topH + gap;
-        const botY = midY + midH + gap;
-        const centerX = margin + sideW + gap;
-        const rightX = centerX + centerW + gap;
+        const col0X = margin;
+        const col1X = margin + slotW + gap;
+        const col2X = margin + (slotW + gap) * 2;
+
+        const row0Y = offsetY;
+        const row1Y = offsetY + slotH + gap;
+        const row2Y = offsetY + (slotH + gap) * 2;
 
         // Draw images at exact dimensions (Sharp already cropped to fit)
         const drawSlot = (slot: SlotType, x: number, y: number, w: number, h: number) => {
@@ -137,16 +139,16 @@ async function generatePdf(
             }
         };
 
-        // Top (centered)
-        drawSlot('top', centerX, topY, centerW, topH);
+        // Top (center column, row 0)
+        drawSlot('top', col1X, row0Y, slotW, slotH);
 
-        // Middle row
-        drawSlot('left', margin, midY, sideW, midH);
-        drawSlot('center', centerX, midY, centerW, midH);
-        drawSlot('right', rightX, midY, sideW, midH);
+        // Middle row (all 3 columns, row 1)
+        drawSlot('left', col0X, row1Y, slotW, slotH);
+        drawSlot('center', col1X, row1Y, slotW, slotH);
+        drawSlot('right', col2X, row1Y, slotW, slotH);
 
-        // Bottom (centered)
-        drawSlot('bottom', centerX, botY, centerW, botH);
+        // Bottom (center column, row 2)
+        drawSlot('bottom', col1X, row2Y, slotW, slotH);
 
         doc.end();
     });
