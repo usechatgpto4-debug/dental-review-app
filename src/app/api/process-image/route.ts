@@ -41,9 +41,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Face layout uses 9:16 portrait ratio
+        // Face layout uses 9:16 portrait ratio, stretched to fill
         const options = layout === 'face'
-            ? { width: 360, height: 640, bgColor: { r: 255, g: 255, b: 255 } }
+            ? { width: 360, height: 640, bgColor: { r: 255, g: 255, b: 255 }, fit: 'fill' as const }
             : undefined;
 
         const processed = await processImageForSlot(imageBuffer, slotType, options);

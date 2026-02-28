@@ -8,6 +8,7 @@ interface ProcessOptions {
     bgColor?: { r: number; g: number; b: number };
     width?: number;
     height?: number;
+    fit?: 'contain' | 'cover' | 'fill';
 }
 
 export async function processImageForSlot(
@@ -19,6 +20,7 @@ export async function processImageForSlot(
     const targetWidth = (options?.width ?? config.width) * PDF_SCALE;
     const targetHeight = (options?.height ?? config.height) * PDF_SCALE;
     const bg = options?.bgColor ?? { r: 255, g: 255, b: 255 };
+    const fitMode = options?.fit ?? 'contain';
 
     // Normalize any exotic format (HEIF, WebP, AVIF) → PNG first
     let normalizedBuffer: Buffer;
@@ -30,10 +32,9 @@ export async function processImageForSlot(
         normalizedBuffer = imageBuffer;
     }
 
-    // 'contain' — fits entire image, pads with bg color, exact output size
     return sharp(normalizedBuffer)
         .resize(targetWidth, targetHeight, {
-            fit: 'contain',
+            fit: fitMode,
             background: { ...bg, alpha: 1 },
         })
         .jpeg({ quality: 92 })

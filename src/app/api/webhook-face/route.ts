@@ -50,11 +50,12 @@ export async function POST(request: NextRequest) {
             if (!input || typeof input !== 'string') continue;
 
             const buffer = await resolveImage(input);
-            // All 3 face images get the same 9:16 portrait ratio and white bg padding
+            // All 3 face images get the same 9:16 portrait ratio, stretched to fill
             processedImages[slot] = await processImageForSlot(buffer, 'center', {
                 bgColor: { r: 255, g: 255, b: 255 },
                 width: 360,
                 height: 640,
+                fit: 'fill',
             });
         }
 
