@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PAGE_SIZES, DEFAULT_PAGE_SIZE } from '@/lib/constants';
+import { PAGE_SIZES } from '@/lib/constants';
 
 type FaceSlot = 'left' | 'center' | 'right';
 
@@ -21,66 +21,33 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
         setIsGenerating(true);
 
         try {
-            const { jsPDF } = await import('jspdf');
-            const config = PAGE_SIZES[pageSize];
-            const pdf = new jsPDF({
-                orientation: config.width > config.height ? 'landscape' : 'portrait',
-                unit: 'mm',
-                format: [config.width, config.height],
-            });
-
-            const pageW = config.width;
-            const pageH = config.height;
-            const margin = 7;  // ~20pt in PDF points → ~7mm
-            const gap = 2;     // ~6pt in PDF points → ~2mm
-
-            const usableW = pageW - margin * 2;
-            const usableH = pageH - margin * 2;
-
-            // White background (matches API)
-            pdf.setFillColor(255, 255, 255);
-            pdf.rect(0, 0, pageW, pageH, 'F');
-
-            // 3 images side by side — 9:16 portrait ratio, vertically centered
-            const imgW = (usableW - gap * 2) / 3;
-            const imgH_byW = imgW * (16 / 9);
-
-            let imgH: number, finalW: number;
-            if (imgH_byW > usableH) {
-                imgH = usableH;
-                finalW = imgH * (9 / 16);
-            } else {
-                imgH = imgH_byW;
-                finalW = imgW;
+            // Build payload matching the webhook-face API format
+            const payload: Record<string, string> = { pageSize };
+            const slots: FaceSlot[] = ['left', 'center', 'right'];
+            for (const slot of slots) {
+                if (images[slot]) {
+                    payload[slot] = images[slot]!;
+                }
             }
 
-            const totalW = finalW * 3 + gap * 2;
-            const startX = margin + (usableW - totalW) / 2;
-            const topY = margin + (usableH - imgH) / 2;
-
-            const r = 3; // rounded corner radius in mm (~8pt)
-
-            const slots: FaceSlot[] = ['left', 'center', 'right'];
-
-            slots.forEach((slot, i) => {
-                const img = images[slot];
-                if (!img) return;
-
-                const x = startX + i * (finalW + gap);
-
-                try {
-                    // Draw rounded rectangle clip path
-                    pdf.saveGraphicsState();
-                    roundedRect(pdf, x, topY, finalW, imgH, r);
-                    pdf.addImage(img, 'JPEG', x, topY, finalW, imgH);
-                    pdf.restoreGraphicsState();
-                } catch {
-                    // skip failed images
-                }
+            const res = await fetch('/api/webhook-face', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
             });
 
+            if (!res.ok) throw new Error('PDF generation failed');
+
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
             const timestamp = new Date().toISOString().slice(0, 10);
-            pdf.save(`face-review-${timestamp}.pdf`);
+            a.download = `face-review-${timestamp}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         } catch (error) {
             console.error('PDF generation failed:', error);
         } finally {
@@ -127,8 +94,4 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
             </button>
         </div>
     );
-}
-
-function roundedRect(pdf: InstanceType<typeof import('jspdf').jsPDF>, x: number, y: number, w: number, h: number, r: number) {
-    pdf.roundedRect(x, y, w, h, r, r, 'S');
 }
