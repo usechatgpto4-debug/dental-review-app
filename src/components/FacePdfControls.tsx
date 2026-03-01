@@ -40,14 +40,22 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
 
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            const timestamp = new Date().toISOString().slice(0, 10);
-            a.download = `face-review-${timestamp}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+            if (isMobile) {
+                // Mobile: open in browser's PDF viewer (supports save/share)
+                window.open(url, '_blank');
+            } else {
+                // Desktop: direct download
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().slice(0, 10);
+                a.download = `face-review-${timestamp}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
         } catch (error) {
             console.error('PDF generation failed:', error);
         } finally {
