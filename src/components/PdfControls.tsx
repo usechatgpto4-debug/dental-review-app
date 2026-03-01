@@ -67,15 +67,21 @@ export default function PdfControls({ images }: PdfControlsProps) {
             const row1Y = offsetY + slotH + gap;
             const row2Y = offsetY + (slotH + gap) * 2;
 
-            // background
-            pdf.setFillColor(15, 15, 20);
+            // White background (matches API)
+            pdf.setFillColor(255, 255, 255);
             pdf.rect(0, 0, pageW, pageH, 'F');
 
-            // Draw images
+            // Rounded corner radius in mm (~6pt)
+            const r = 2;
+
+            // Draw images with rounded corner clip (matches API)
             const drawImage = (img: string | null, x: number, y: number, w: number, h: number) => {
                 if (!img) return;
                 try {
+                    pdf.saveGraphicsState();
+                    pdf.roundedRect(x, y, w, h, r, r, 'S');
                     pdf.addImage(img, 'JPEG', x, y, w, h);
+                    pdf.restoreGraphicsState();
                 } catch {
                     // skip if image fails
                 }
@@ -92,14 +98,7 @@ export default function PdfControls({ images }: PdfControlsProps) {
             // Bottom (center column, row 2)
             drawImage(images.bottom, col1X, row2Y, slotW, slotH);
 
-            // Add subtle border to each image
-            pdf.setDrawColor(50, 50, 60);
-            pdf.setLineWidth(0.3);
-            if (images.top) pdf.rect(col1X, row0Y, slotW, slotH);
-            if (images.left) pdf.rect(col0X, row1Y, slotW, slotH);
-            if (images.center) pdf.rect(col1X, row1Y, slotW, slotH);
-            if (images.right) pdf.rect(col2X, row1Y, slotW, slotH);
-            if (images.bottom) pdf.rect(col1X, row2Y, slotW, slotH);
+            // Borders are now drawn as rounded rects inside drawImage
 
             const timestamp = new Date().toISOString().slice(0, 10);
             pdf.save(`dental-review-${timestamp}.pdf`);

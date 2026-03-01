@@ -3,7 +3,7 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import FaceLayout from '@/components/FaceLayout';
-import PdfControls from '@/components/PdfControls';
+import FacePdfControls from '@/components/FacePdfControls';
 import type { SlotType } from '@/lib/constants';
 
 type FaceSlot = 'left' | 'center' | 'right';
@@ -36,15 +36,6 @@ export default function FaceReviewPage() {
 
     const filledCount = Object.values(images).filter(Boolean).length;
 
-    // Extend images to full SlotType record for PdfControls compatibility
-    const fullImages: Record<SlotType, string | null> = {
-        top: null,
-        left: images.left,
-        center: images.center,
-        right: images.right,
-        bottom: null,
-    };
-
     return (
         <main className="app">
             <header className="app-header">
@@ -74,7 +65,7 @@ export default function FaceReviewPage() {
             </section>
 
             <section className="controls-section">
-                <PdfControls images={fullImages} />
+                <FacePdfControls images={images} />
             </section>
 
             <footer className="app-footer">
