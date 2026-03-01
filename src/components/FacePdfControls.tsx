@@ -20,8 +20,16 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
         if (!canGenerate) return;
         setIsGenerating(true);
 
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        let pdfWindow: Window | null = null;
+        if (isMobile) {
+            pdfWindow = window.open('', '_blank');
+            if (pdfWindow) {
+                pdfWindow.document.write('<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#f5f5f5;margin:0"><p style="font-size:18px;color:#333">⏳ Generating PDF...</p></body></html>');
+            }
+        }
+
         try {
-            // Build payload matching the webhook-face API format
             const payload: Record<string, string> = { pageSize };
             const slots: FaceSlot[] = ['left', 'center', 'right'];
             for (const slot of slots) {
@@ -40,13 +48,10 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
 
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-            if (isMobile) {
-                // Mobile: open in browser's PDF viewer (supports save/share)
-                window.open(url, '_blank');
+            if (isMobile && pdfWindow) {
+                pdfWindow.location.href = url;
             } else {
-                // Desktop: direct download
                 const a = document.createElement('a');
                 a.href = url;
                 const timestamp = new Date().toISOString().slice(0, 10);
@@ -58,6 +63,7 @@ export default function FacePdfControls({ images }: FacePdfControlsProps) {
             }
         } catch (error) {
             console.error('PDF generation failed:', error);
+            if (pdfWindow) pdfWindow.close();
         } finally {
             setIsGenerating(false);
         }
