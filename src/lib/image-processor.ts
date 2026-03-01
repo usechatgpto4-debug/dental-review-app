@@ -26,6 +26,7 @@ export async function processImageForSlot(
     let normalizedBuffer: Buffer;
     try {
         normalizedBuffer = await sharp(imageBuffer)
+            .rotate()  // Auto-rotate based on EXIF orientation (mobile cameras)
             .toFormat('png')
             .toBuffer();
     } catch {
@@ -33,6 +34,7 @@ export async function processImageForSlot(
     }
 
     return sharp(normalizedBuffer)
+        .rotate()  // Ensure correct orientation if normalization was skipped
         .resize(targetWidth, targetHeight, {
             fit: fitMode,
             background: { ...bg, alpha: 1 },
