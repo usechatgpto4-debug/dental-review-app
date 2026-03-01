@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import type { SlotType } from '@/lib/constants';
 import { SLOT_CONFIGS } from '@/lib/constants';
 
@@ -17,8 +17,17 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
     const [isLoading, setIsLoading] = useState(false);
     const [showUrlInput, setShowUrlInput] = useState(false);
     const [urlValue, setUrlValue] = useState('');
+    const [isMobile, setIsMobile] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
     const config = SLOT_CONFIGS[slotType];
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth <= 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     const processFile = useCallback(async (file: File) => {
         setIsLoading(true);
@@ -36,7 +45,7 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
         } finally {
             setIsLoading(false);
         }
-    }, [slotType, onImageSet]);
+    }, [slotType, layout, onImageSet]);
 
     const processUrl = useCallback(async () => {
         if (!urlValue.trim()) return;
@@ -59,7 +68,7 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
         } finally {
             setIsLoading(false);
         }
-    }, [urlValue, slotType, onImageSet]);
+    }, [urlValue, slotType, layout, onImageSet]);
 
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -71,6 +80,13 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
     const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) processFile(file);
+        e.target.value = '';
+    }, [processFile]);
+
+    const handleCameraCapture = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) processFile(file);
+        e.target.value = '';
     }, [processFile]);
 
     return (
@@ -103,6 +119,14 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
                     <div className="image-slot__label">{config.labelTh}</div>
                     <div className="image-slot__sublabel">{config.label}</div>
                     <div className="image-slot__actions">
+                        {isMobile && (
+                            <button
+                                className="btn btn--sm btn--accent image-slot__camera-btn"
+                                onClick={() => cameraInputRef.current?.click()}
+                            >
+                                📷 Camera
+                            </button>
+                        )}
                         <button
                             className="btn btn--sm"
                             onClick={() => fileInputRef.current?.click()}
@@ -133,11 +157,22 @@ export default function ImageSlot({ slotType, image, layout, onImageSet, onImage
                 </div>
             )}
 
+            {/* File upload input */}
             <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={handleFileSelect}
+                style={{ display: 'none' }}
+            />
+
+            {/* Camera capture input (mobile) */}
+            <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraCapture}
                 style={{ display: 'none' }}
             />
         </div>

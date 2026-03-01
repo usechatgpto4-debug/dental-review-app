@@ -511,47 +511,237 @@ body {
 }
 
 /* ===========================
-   RESPONSIVE
+   CAMERA BUTTON (mobile)
+   =========================== */
+
+.image-slot__camera-btn {
+  display: none;
+}
+
+/* ===========================
+   RESPONSIVE — TABLET (≤ 768px)
    =========================== */
 
 @media (max-width: 768px) {
   .app {
     padding: 16px 12px;
-    gap: 20px;
+    gap: 16px;
   }
 
   .app-header {
     flex-direction: column;
     gap: 12px;
     text-align: center;
+    padding: 14px 16px;
   }
 
   .app-header__brand {
     flex-direction: column;
+    gap: 8px;
   }
 
+  .app-header__icon {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+  }
+
+  /* ----- CROSS LAYOUT: vertical stack ----- */
   .cross-layout {
-    transform: scale(0.75);
-    transform-origin: top center;
+    width: 100%;
+    gap: 8px;
   }
 
+  .cross-layout__row {
+    width: 100%;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .cross-layout__row--top,
+  .cross-layout__row--bottom {
+    justify-content: center;
+  }
+
+  /* All dental slots: fluid width, 4:3 ratio */
+  .cross-layout .image-slot {
+    width: calc(33.333% - 6px);
+    height: auto;
+    aspect-ratio: 4 / 3;
+    min-width: 0;
+  }
+
+  /* Top and Bottom slots: wider on mobile since they're alone */
+  .cross-layout__row--top .image-slot,
+  .cross-layout__row--bottom .image-slot {
+    width: min(70%, 280px);
+  }
+
+  /* ----- FACE LAYOUT: keep horizontal but fluid ----- */
+  .face-layout {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .face-layout .image-slot {
+    width: calc(33.333% - 4px);
+    height: auto;
+    aspect-ratio: 9 / 16;
+    min-width: 0;
+  }
+
+  /* ----- IMAGE SLOTS: touch-friendly ----- */
+  .image-slot__remove {
+    opacity: 1;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  .image-slot__actions {
+    gap: 4px;
+  }
+
+  .image-slot__camera-btn {
+    display: inline-flex;
+  }
+
+  .image-slot__label {
+    font-size: 15px;
+  }
+
+  .image-slot__sublabel {
+    font-size: 10px;
+  }
+
+  .btn--sm {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-height: 34px;
+  }
+
+  /* ----- PDF CONTROLS ----- */
   .pdf-controls {
     flex-direction: column;
     align-items: stretch;
+    gap: 12px;
   }
 
   .pdf-controls__options {
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+  }
+
+  .pdf-controls__field {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .pdf-controls__field select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+
+  .controls-section {
+    padding: 16px;
+  }
+
+  .btn--lg {
+    padding: 14px 24px;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  /* Footer */
+  .app-footer {
+    font-size: 11px;
   }
 }
 
+/* ===========================
+   RESPONSIVE — PHONE (≤ 480px)
+   =========================== */
+
 @media (max-width: 480px) {
-  .cross-layout {
-    transform: scale(0.55);
+  .app {
+    padding: 12px 8px;
+    gap: 12px;
+  }
+
+  .app-header {
+    padding: 12px;
   }
 
   .app-header__title {
-    font-size: 18px;
+    font-size: 17px;
+  }
+
+  .app-header__subtitle {
+    font-size: 11px;
+  }
+
+  /* Cross layout: stack ALL slots vertically */
+  .cross-layout {
+    gap: 6px;
+  }
+
+  .cross-layout__row {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cross-layout .image-slot {
+    width: 85%;
+    max-width: 320px;
+  }
+
+  .cross-layout__row--top .image-slot,
+  .cross-layout__row--bottom .image-slot {
+    width: 85%;
+    max-width: 320px;
+  }
+
+  /* Face layout: stack vertically on very small screens */
+  .face-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .face-layout .image-slot {
+    width: 75%;
+    max-width: 260px;
+    aspect-ratio: 9 / 16;
+  }
+
+  /* Bigger touch targets */
+  .image-slot__empty {
+    padding: 12px 8px;
+    gap: 6px;
+  }
+
+  .image-slot__actions {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .btn--sm {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-height: 40px;
+  }
+
+  .image-slot__url-input {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .image-slot__url-input input {
+    font-size: 14px;
+    padding: 10px 12px;
   }
 }
